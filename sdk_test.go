@@ -1,4 +1,4 @@
-package chatgpt
+package chat_gpt_sdk
 
 import (
 	"testing"

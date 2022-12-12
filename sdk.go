@@ -1,4 +1,4 @@
-package chatgpt
+package chat_gpt_sdk
 
 import (
 	"bytes"
@@ -8,28 +8,31 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/golang-infrastructure/go-ChatGPT/entity"
-	"github.com/golang-infrastructure/go-ChatGPT/lib"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/ssh/terminal"
+	"github.com/otkinlife/chat_gpt_sdk/entity"
+	"github.com/otkinlife/chat_gpt_sdk/lib"
+	"golang.org/x/term"
 )
 
+// ConversationAPIURL API地址
 const ConversationAPIURL = "https://chat.openai.com/backend-api/conversation"
 
+// ChatGPT 客户端
 type ChatGPT struct {
 	token         string
 	authorization string
-
-	userAgent string
+	userAgent     string
 
 	conversationID  string
 	parentMessageID string
-	term            *terminal.Terminal
-	Old             string
-	Last            string
+
+	term *term.Terminal
+	Old  string
+	Last string
 }
 
-func NewChatGPT(token string, term *terminal.Terminal) *ChatGPT {
+// NewChatGPT 返回一个ChatGPT客户端
+func NewChatGPT(token string, term *term.Terminal) *ChatGPT {
 	return &ChatGPT{
 		token:         token,
 		authorization: "Bearer " + token,
@@ -38,6 +41,7 @@ func NewChatGPT(token string, term *terminal.Terminal) *ChatGPT {
 	}
 }
 
+// Talk 与GPT进行对话，该方法接收一个入参（提问），并将出参（回答）写到标准输出
 func (cg *ChatGPT) Talk(question string) error {
 	if cg.parentMessageID == "" {
 		cg.parentMessageID = uuid.New().String()
@@ -105,33 +109,4 @@ func (cg *ChatGPT) getConversatio(c chan string) error {
 	}
 	cg.term.Write([]byte("\n"))
 	return nil
-}
-
-func (x *ChatGPT) GetConversationID() string {
-	return x.conversationID
-}
-
-func (x *ChatGPT) SetConversationID(conversationID string) {
-	x.conversationID = conversationID
-}
-
-func (x *ChatGPT) GetParentMessageID() string {
-	return x.parentMessageID
-}
-
-func (x *ChatGPT) SetParentMessageID(parentMessageID string) {
-	x.parentMessageID = parentMessageID
-}
-
-func (x *ChatGPT) GetUserAgent() string {
-	return x.userAgent
-}
-
-func (x *ChatGPT) SetUserAgent(userAgent string) {
-	x.userAgent = userAgent
-}
-
-func (x *ChatGPT) Settoken(token string) {
-	x.token = token
-	x.authorization = "Bearer " + token
 }

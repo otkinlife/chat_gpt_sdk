@@ -1,5 +1,4 @@
-module github.com/golang-infrastructure/go-ChatGPT
-
+module github.com/otkinlife/chat_gpt_sdk
 go 1.18
 
 require (
