@@ -106,6 +106,11 @@ func (client *OpenAIClient) CreateChatStream(request ChatCompletionRequest) (<-c
 		scanner := bufio.NewScanner(resp.Body)
 		for scanner.Scan() {
 			line := scanner.Text()
+			if line == "data: [DONE]" {
+				// 流式响应结束
+				return
+			}
+
 			if strings.HasPrefix(line, "data: ") {
 				var chunk ChatCompletionResponse
 				err := json.Unmarshal([]byte(line[6:]), &chunk) // 从 "data: " 后开始解析
@@ -114,9 +119,6 @@ func (client *OpenAIClient) CreateChatStream(request ChatCompletionRequest) (<-c
 					return
 				}
 				responseChan <- chunk
-			} else if line == "data: [DONE]" {
-				// 流式响应结束
-				return
 			}
 		}
 		if err := scanner.Err(); err != nil {
